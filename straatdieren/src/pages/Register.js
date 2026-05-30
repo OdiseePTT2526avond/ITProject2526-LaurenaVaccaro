@@ -4,6 +4,21 @@ function Register() {
   const [naam, setNaam] = useState('');
   const [email, setEmail] = useState('');
   const [wachtwoord, setWachtwoord] = useState('');
+  const [bericht, setBericht] = useState('');
+
+  const registreer = async () => {
+    const response = await fetch('http://localhost:5000/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ naam, email, wachtwoord })
+    });
+    const data = await response.json();
+    if (data.bericht) {
+      setBericht('Account aangemaakt! Je kan nu inloggen.');
+    } else {
+      setBericht(data.fout);
+    }
+  };
 
   const styles = {
     pagina: { backgroundColor: '#f0f2f5', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' },
@@ -13,7 +28,8 @@ function Register() {
     input: { width: '100%', padding: '12px', marginBottom: '12px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box' },
     knop: { width: '100%', padding: '14px', backgroundColor: '#5B6EF5', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' },
     link: { color: '#5B6EF5', textDecoration: 'none' },
-    tekst: { marginTop: '16px', fontSize: '13px', color: '#666' }
+    tekst: { marginTop: '16px', fontSize: '13px', color: '#666' },
+    bericht: { marginTop: '12px', fontSize: '13px', color: 'green' }
   };
 
   return (
@@ -24,7 +40,8 @@ function Register() {
         <input style={styles.input} type="text" placeholder="Naam" value={naam} onChange={e => setNaam(e.target.value)} />
         <input style={styles.input} type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
         <input style={styles.input} type="password" placeholder="Wachtwoord" value={wachtwoord} onChange={e => setWachtwoord(e.target.value)} />
-        <button style={styles.knop}>REGISTREREN</button>
+        <button style={styles.knop} onClick={registreer}>REGISTREREN</button>
+        {bericht && <p style={styles.bericht}>{bericht}</p>}
         <p style={styles.tekst}>Al een account? <a href="/login" style={styles.link}>Login hier</a></p>
       </div>
     </div>
