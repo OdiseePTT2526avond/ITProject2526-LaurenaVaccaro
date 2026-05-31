@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Meldingen from './pages/Meldingen';
 import MeldingMaken from './pages/MeldingMaken';
+import MeldingDetail from './pages/MeldingDetail';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/meldingen" element={<Meldingen />} />
         <Route path="/melding-maken" element={<MeldingMaken />} />
+        <Route path="/melding/:id" element={<MeldingDetail />} />
       </Routes>
     </BrowserRouter>
   );
