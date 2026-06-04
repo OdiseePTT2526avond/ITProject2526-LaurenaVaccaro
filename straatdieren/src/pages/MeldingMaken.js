@@ -9,7 +9,6 @@ function MeldingMaken() {
   const [dierType, setDierType] = useState('kat');
   const [beschrijving, setBeschrijving] = useState('');
   const [bericht, setBericht] = useState('');
-  const [aiBezig, setAiBezig] = useState(false);
 
   const haalLocatie = () => {
     navigator.geolocation.getCurrentPosition((pos) => {
@@ -29,23 +28,6 @@ function MeldingMaken() {
     reader.readAsDataURL(file);
   };
 
-  const genereerAI = async () => {
-    setAiBezig(true);
-    setBeschrijving('AI is aan het schrijven...');
-    try {
-      const response = await fetch('http://localhost:5000/api/ai/beschrijving', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ animal_type: dierType, locatie: locatie || 'onbekende locatie' })
-      });
-      const data = await response.json();
-      setBeschrijving(data.beschrijving || 'Geen beschrijving gegenereerd');
-    } catch (err) {
-      setBeschrijving('AI kon geen beschrijving genereren');
-    }
-    setAiBezig(false);
-  };
-
   const verstuur = async () => {
     const token = localStorage.getItem('token');
     const response = await fetch('http://localhost:5000/api/meldingen', {
@@ -56,7 +38,7 @@ function MeldingMaken() {
     const data = await response.json();
     if (data.bericht) {
       setBericht('Melding verstuurd!');
-      setTimeout(() => window.location.href = '/', 1500);
+      setTimeout(() => window.location.href = '/home', 1500);
     } else {
       setBericht(data.fout || 'Er ging iets mis');
     }
@@ -73,7 +55,6 @@ function MeldingMaken() {
     select: { width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box' },
     textarea: { width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box', height: '100px', resize: 'none' },
     knop: { width: '100%', padding: '14px', backgroundColor: '#5B6EF5', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' },
-    aiKnop: { width: '100%', padding: '10px', backgroundColor: '#34C759', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', marginBottom: '8px' },
     gpsKnop: { backgroundColor: 'transparent', border: 'none', color: '#5B6EF5', cursor: 'pointer', fontSize: '13px', marginTop: '4px' },
     preview: { width: '100%', borderRadius: '8px' }
   };
@@ -81,7 +62,7 @@ function MeldingMaken() {
   return (
     <div style={styles.pagina}>
       <div style={styles.header}>
-        <a href="/" style={{ textDecoration: 'none', fontSize: '20px' }}>←</a>
+        <a href="/home" style={{ textDecoration: 'none', fontSize: '20px' }}>←</a>
         <div style={styles.titel}>Dier melden</div>
       </div>
       <div style={styles.kaart}>
@@ -108,9 +89,6 @@ function MeldingMaken() {
       </div>
       <div style={styles.kaart}>
         <label style={styles.label}>Beschrijving</label>
-        <button style={styles.aiKnop} onClick={genereerAI} disabled={aiBezig}>
-          {aiBezig ? '⏳ AI schrijft...' : '🤖 Genereer beschrijving met AI'}
-        </button>
         <textarea style={styles.textarea} placeholder="Beschrijf het dier en de situatie..." value={beschrijving} onChange={e => setBeschrijving(e.target.value)} />
       </div>
       {bericht && <p style={{ color: 'green', textAlign: 'center', marginBottom: '10px' }}>{bericht}</p>}

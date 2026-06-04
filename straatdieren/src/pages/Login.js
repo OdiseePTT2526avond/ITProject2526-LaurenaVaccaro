@@ -16,7 +16,7 @@ function Login() {
       localStorage.setItem('token', data.token);
       localStorage.setItem('naam', data.naam);
       localStorage.setItem('rol', data.rol);
-      window.location.href = '/';
+      window.location.href = '/home';
     } else {
       setBericht(data.fout);
     }
@@ -31,7 +31,8 @@ function Login() {
     knop: { width: '100%', padding: '14px', backgroundColor: '#5B6EF5', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' },
     link: { color: '#5B6EF5', textDecoration: 'none' },
     tekst: { marginTop: '16px', fontSize: '13px', color: '#666' },
-    fout: { marginTop: '12px', fontSize: '13px', color: 'red' }
+    fout: { marginTop: '12px', fontSize: '13px', color: 'red' },
+    terug: { marginTop: '12px', fontSize: '13px', color: '#5B6EF5', cursor: 'pointer' },
   };
 
   return (
@@ -44,6 +45,7 @@ function Login() {
         <button style={styles.knop} onClick={login}>LOGIN</button>
         {bericht && <p style={styles.fout}>{bericht}</p>}
         <p style={styles.tekst}>Nog geen account? <a href="/register" style={styles.link}>Registreer hier</a></p>
+        <p style={styles.terug} onClick={() => window.location.href = '/'}>← Terug naar startpagina</p>
       </div>
     </div>
   );
