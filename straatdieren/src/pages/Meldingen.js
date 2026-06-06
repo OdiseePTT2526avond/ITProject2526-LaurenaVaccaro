@@ -48,6 +48,12 @@ function Meldingen() {
     return '🐾';
   };
 
+  const urgentieBadge = (urgentie) => {
+    if (urgentie === 'dringend') return <span style={{ backgroundColor: '#FF4B4B', color: 'white', fontSize: '10px', padding: '2px 6px', borderRadius: '10px', fontWeight: 'bold' }}>🔴 DRINGEND</span>;
+    if (urgentie === 'gemiddeld') return <span style={{ backgroundColor: '#FF9500', color: 'white', fontSize: '10px', padding: '2px 6px', borderRadius: '10px', fontWeight: 'bold' }}>🟠 GEMIDDELD</span>;
+    return null;
+  };
+
   const meldingMetLocatie = meldingen.filter(m => m.latitude && m.longitude);
   const center = meldingMetLocatie.length > 0
     ? [meldingMetLocatie[0].latitude, meldingMetLocatie[0].longitude]
@@ -57,15 +63,15 @@ function Meldingen() {
     pagina: { backgroundColor: '#f0f2f5', minHeight: '100vh', padding: '20px', paddingBottom: '80px' },
     zoekbalk: { display: 'flex', gap: '10px', marginBottom: '12px' },
     input: { flex: 1, padding: '10px 16px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '14px' },
-    filterKnop: { padding: '10px 16px', borderRadius: '8px', border: '1px solid #5B6EF5', backgroundColor: toonFilter ? '#5B6EF5' : 'white', color: toonFilter ? 'white' : '#5B6EF5', cursor: 'pointer', fontWeight: 'bold' },
+    filterKnop: { padding: '10px 16px', borderRadius: '8px', border: `1px solid ${toonFilter ? '#5B6EF5' : '#ddd'}`, backgroundColor: toonFilter ? '#5B6EF5' : 'white', color: toonFilter ? 'white' : '#5B6EF5', cursor: 'pointer', fontWeight: 'bold' },
     filterPanel: { backgroundColor: 'white', borderRadius: '12px', padding: '16px', marginBottom: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' },
     filterRij: { display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '8px' },
     filterChip: (actief) => ({ padding: '6px 12px', borderRadius: '20px', border: '1px solid #ddd', backgroundColor: actief ? '#5B6EF5' : 'white', color: actief ? 'white' : '#333', fontSize: '12px', cursor: 'pointer', fontWeight: actief ? 'bold' : 'normal' }),
     kaartContainer: { borderRadius: '12px', overflow: 'hidden', marginBottom: '16px', height: '200px' },
     titel: { fontWeight: 'bold', fontSize: '18px', marginBottom: '12px' },
     melding: { backgroundColor: 'white', borderRadius: '12px', padding: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px', boxShadow: '0 1px 4px rgba(0,0,0,0.08)', cursor: 'pointer' },
-    meldingLinks: { display: 'flex', alignItems: 'center', gap: '12px', fontSize: '14px' },
-    badge: (kleur) => ({ backgroundColor: kleur, color: 'white', padding: '4px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold' }),
+    meldingLinks: { display: 'flex', alignItems: 'center', gap: '12px', fontSize: '14px', flex: 1 },
+    badge: (kleur) => ({ backgroundColor: kleur, color: 'white', padding: '4px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', whiteSpace: 'nowrap' }),
     leeg: { textAlign: 'center', color: '#999', marginTop: '40px' },
     bottomNav: { position: 'fixed', bottom: 0, left: 0, right: 0, backgroundColor: 'white', display: 'flex', justifyContent: 'space-around', padding: '12px', borderTop: '1px solid #eee' },
     navItem: (actief) => ({ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '11px', color: actief ? '#5B6EF5' : '#999', cursor: 'pointer', textDecoration: 'none' }),
@@ -80,27 +86,29 @@ function Meldingen() {
 
       {toonFilter && (
         <div style={styles.filterPanel}>
-          <div style={{ fontWeight: 'bold', fontSize: '13px', marginBottom: '8px' }}>Diersoort</div>
+          <div style={{ fontWeight: 'bold', fontSize: '13px', marginBottom: '8px' }}>🐾 Diersoort</div>
           <div style={styles.filterRij}>
-            {['', 'kat', 'hond', 'vogel', 'ander'].map(t => (
-              <button key={t} style={styles.filterChip(filterType === t)} onClick={() => setFilterType(t)}>
-                {t === '' ? 'Alle' : t === 'kat' ? '🐱 Kat' : t === 'hond' ? '🐶 Hond' : t === 'vogel' ? '🐦 Vogel' : '🐾 Ander'}
-              </button>
+            {[['', 'Alle'], ['kat', '🐱 Kat'], ['hond', '🐶 Hond'], ['vogel', '🐦 Vogel'], ['ander', '🐾 Ander']].map(([val, label]) => (
+              <button key={val} style={styles.filterChip(filterType === val)} onClick={() => setFilterType(val)}>{label}</button>
             ))}
           </div>
-          <div style={{ fontWeight: 'bold', fontSize: '13px', marginBottom: '8px' }}>Status</div>
+          <div style={{ fontWeight: 'bold', fontSize: '13px', marginBottom: '8px' }}>📊 Status</div>
           <div style={styles.filterRij}>
-            {['', 'nieuw', 'in_behandeling', 'geholpen'].map(s => (
-              <button key={s} style={styles.filterChip(filterStatus === s)} onClick={() => setFilterStatus(s)}>
-                {s === '' ? 'Alle' : s === 'nieuw' ? '🔴 Nieuw' : s === 'in_behandeling' ? '🟠 In behandeling' : '🟢 Geholpen'}
-              </button>
+            {[['', 'Alle'], ['nieuw', '🔴 Nieuw'], ['in_behandeling', '🟠 In behandeling'], ['geholpen', '🟢 Geholpen']].map(([val, label]) => (
+              <button key={val} style={styles.filterChip(filterStatus === val)} onClick={() => setFilterStatus(val)}>{label}</button>
             ))}
           </div>
-          <div style={{ fontWeight: 'bold', fontSize: '13px', marginBottom: '8px' }}>Sorteren</div>
+          <div style={{ fontWeight: 'bold', fontSize: '13px', marginBottom: '8px' }}>🚨 Urgentie</div>
+          <div style={styles.filterRij}>
+            {[['', 'Alle'], ['dringend', '🔴 Dringend'], ['gemiddeld', '🟠 Gemiddeld'], ['laag', '🟢 Laag']].map(([val, label]) => (
+              <button key={val} style={styles.filterChip(filterUrgentie === val)} onClick={() => setFilterUrgentie(val)}>{label}</button>
+            ))}
+          </div>
+          <div style={{ fontWeight: 'bold', fontSize: '13px', marginBottom: '8px' }}>📅 Sorteren</div>
           <div style={styles.filterRij}>
             <button style={styles.filterChip(false)} onClick={() => setMeldingen([...meldingen].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)))}>📅 Nieuwste eerst</button>
             <button style={styles.filterChip(false)} onClick={() => setMeldingen([...meldingen].sort((a, b) => new Date(a.created_at) - new Date(b.created_at)))}>📅 Oudste eerst</button>
-            <button style={styles.filterChip(false)} onClick={() => setFilterStatus('nieuw')}>🆘 Nog hulp nodig</button>
+            <button style={styles.filterChip(filterStatus === 'nieuw')} onClick={() => setFilterStatus('nieuw')}>🆘 Nog hulp nodig</button>
           </div>
         </div>
       )}
@@ -116,7 +124,7 @@ function Meldingen() {
         </MapContainer>
       </div>
 
-      <div style={styles.titel}>Lijst van meldingen ({gefilterd.length})</div>
+      <div style={styles.titel}>Meldingen ({gefilterd.length})</div>
 
       {gefilterd.length === 0 ? (
         <div style={styles.leeg}>Geen meldingen gevonden</div>
@@ -126,8 +134,11 @@ function Meldingen() {
             <div style={styles.meldingLinks}>
               <span style={{ fontSize: '28px' }}>{dierEmoji(m.animal_type)}</span>
               <div>
-                <div><strong>{m.animal_type}</strong></div>
-                <div style={{ color: '#999', fontSize: '12px' }}>{m.description?.substring(0, 40)}...</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                  <strong>{m.animal_type}</strong>
+                  {urgentieBadge(m.urgentie)}
+                </div>
+                <div style={{ color: '#999', fontSize: '12px', marginTop: '2px' }}>{m.description?.substring(0, 40)}...</div>
               </div>
             </div>
             <span style={styles.badge(statusKleur(m.status))}>{m.status}</span>

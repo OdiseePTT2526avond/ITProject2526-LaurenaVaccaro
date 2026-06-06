@@ -7,6 +7,9 @@ import Meldingen from './pages/Meldingen';
 import MeldingMaken from './pages/MeldingMaken';
 import MeldingDetail from './pages/MeldingDetail';
 import Profiel from './pages/Profiel';
+import Instellingen from './pages/Instellingen';
+import MijnHulpacties from './pages/MijnHulpacties';
+import Admin from './pages/Admin';
 
 function App() {
   return (
@@ -20,6 +23,9 @@ function App() {
         <Route path="/melding-maken" element={<MeldingMaken />} />
         <Route path="/melding/:id" element={<MeldingDetail />} />
         <Route path="/profiel" element={<Profiel />} />
+        <Route path="/instellingen" element={<Instellingen />} />
+        <Route path="/mijn-hulpacties" element={<MijnHulpacties />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
     </BrowserRouter>
   );
