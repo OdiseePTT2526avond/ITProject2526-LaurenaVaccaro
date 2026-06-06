@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import BottomNav from '../components/BottomNav';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -73,19 +74,17 @@ function Meldingen() {
     meldingLinks: { display: 'flex', alignItems: 'center', gap: '12px', fontSize: '14px', flex: 1 },
     badge: (kleur) => ({ backgroundColor: kleur, color: 'white', padding: '4px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', whiteSpace: 'nowrap' }),
     leeg: { textAlign: 'center', color: '#999', marginTop: '40px' },
-    bottomNav: { position: 'fixed', bottom: 0, left: 0, right: 0, backgroundColor: 'white', display: 'flex', justifyContent: 'space-around', padding: '12px', borderTop: '1px solid #eee' },
-    navItem: (actief) => ({ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '11px', color: actief ? '#5B6EF5' : '#999', cursor: 'pointer', textDecoration: 'none' }),
   };
 
   return (
-    <div style={styles.pagina}>
+    <div className="pagina-animatie" style={styles.pagina}>
       <div style={styles.zoekbalk}>
         <input style={styles.input} placeholder="🔍 Zoeken..." value={zoekterm} onChange={e => setZoekterm(e.target.value)} />
         <button style={styles.filterKnop} onClick={() => setToonFilter(!toonFilter)}>⚙ Filter</button>
       </div>
 
       {toonFilter && (
-        <div style={styles.filterPanel}>
+        <div className="pop-in" style={styles.filterPanel}>
           <div style={{ fontWeight: 'bold', fontSize: '13px', marginBottom: '8px' }}>🐾 Diersoort</div>
           <div style={styles.filterRij}>
             {[['', 'Alle'], ['kat', '🐱 Kat'], ['hond', '🐶 Hond'], ['vogel', '🐦 Vogel'], ['ander', '🐾 Ander']].map(([val, label]) => (
@@ -117,8 +116,11 @@ function Meldingen() {
         <MapContainer center={center} zoom={12} style={{ height: '100%', width: '100%' }} scrollWheelZoom={false}>
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           {meldingMetLocatie.map(m => (
-            <Marker key={m.report_id} position={[m.latitude, m.longitude]}>
-              <Popup>{dierEmoji(m.animal_type)} {m.animal_type} — {m.status}</Popup>
+            <Marker key={m.report_id} position={[m.latitude, m.longitude]} eventHandlers={{ click: () => window.location.href = `/melding/${m.report_id}` }}>
+              <Popup>
+                {dierEmoji(m.animal_type)} <strong>{m.animal_type}</strong> — {m.status}<br />
+                <a href={`/melding/${m.report_id}`} style={{ color: '#5B6EF5' }}>Bekijk melding →</a>
+              </Popup>
             </Marker>
           ))}
         </MapContainer>
@@ -129,14 +131,16 @@ function Meldingen() {
       {gefilterd.length === 0 ? (
         <div style={styles.leeg}>Geen meldingen gevonden</div>
       ) : (
-        gefilterd.map(m => (
-          <div key={m.report_id} style={styles.melding} onClick={() => window.location.href = `/melding/${m.report_id}`}>
+        gefilterd.map((m, index) => (
+          <div key={m.report_id} className={`kaart-hover stagger-${Math.min(index + 1, 5)}`} style={styles.melding} onClick={() => window.location.href = `/melding/${m.report_id}`}>
             <div style={styles.meldingLinks}>
               <span style={{ fontSize: '28px' }}>{dierEmoji(m.animal_type)}</span>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                   <strong>{m.animal_type}</strong>
                   {urgentieBadge(m.urgentie)}
+                  {m.medische_urgentie && <span style={{ backgroundColor: '#FF9500', color: 'white', fontSize: '10px', padding: '2px 6px', borderRadius: '10px', fontWeight: 'bold' }}>🏥 {m.medische_urgentie}</span>}
+                  {m.likes > 0 && <span style={{ fontSize: '11px', color: '#999' }}>❤️ {m.likes}</span>}
                 </div>
                 <div style={{ color: '#999', fontSize: '12px', marginTop: '2px' }}>{m.description?.substring(0, 40)}...</div>
               </div>
@@ -147,12 +151,7 @@ function Meldingen() {
       )}
 
       <div style={{ height: '70px' }} />
-      <div style={styles.bottomNav}>
-        <a href="/home" style={{ textDecoration: 'none' }}><div style={styles.navItem(false)}>🏠<span>Home</span></div></a>
-        <a href="/meldingen" style={{ textDecoration: 'none' }}><div style={styles.navItem(true)}>🗺️<span>Meldingen</span></div></a>
-        <a href="/melding-maken" style={{ textDecoration: 'none' }}><div style={styles.navItem(false)}>➕<span>Melden</span></div></a>
-        <a href="/profiel" style={{ textDecoration: 'none' }}><div style={styles.navItem(false)}>👤<span>Profiel</span></div></a>
-      </div>
+      <BottomNav actief="meldingen" />
     </div>
   );
 }

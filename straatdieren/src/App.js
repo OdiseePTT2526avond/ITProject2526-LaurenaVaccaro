@@ -10,6 +10,7 @@ import Profiel from './pages/Profiel';
 import Instellingen from './pages/Instellingen';
 import MijnHulpacties from './pages/MijnHulpacties';
 import Admin from './pages/Admin';
+import Succesverhalen from './pages/Succesverhalen';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="/instellingen" element={<Instellingen />} />
         <Route path="/mijn-hulpacties" element={<MijnHulpacties />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/succesverhalen" element={<Succesverhalen />} />
       </Routes>
     </BrowserRouter>
   );

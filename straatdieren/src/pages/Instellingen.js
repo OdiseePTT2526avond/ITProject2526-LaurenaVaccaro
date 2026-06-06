@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import BottomNav from '../components/BottomNav';
 
 function Instellingen() {
   const [notificaties, setNotificaties] = useState({
@@ -77,13 +78,11 @@ function Instellingen() {
     wachtwoordInput: { width: '100%', padding: '12px', paddingRight: '44px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box' },
     oogKnop: { position: 'absolute', right: '12px', top: '12px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px' },
     knop: { width: '100%', padding: '14px', backgroundColor: '#5B6EF5', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' },
-    gevarenKaart: { backgroundColor: '#fff5f5', borderRadius: '12px', margin: '12px', padding: '16px', border: '1px solid #ffcccc', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' },
+    gevarenKaart: { backgroundColor: '#fff5f5', borderRadius: '12px', margin: '12px', padding: '16px', border: '1px solid #ffcccc' },
     gevarenKnop: { width: '100%', padding: '14px', backgroundColor: '#FF4B4B', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', marginTop: '8px' },
     toggle: (aan) => ({ width: '50px', height: '28px', borderRadius: '14px', backgroundColor: aan ? '#34C759' : '#ddd', position: 'relative', cursor: 'pointer', transition: 'background 0.3s', flexShrink: 0 }),
     toggleBol: (aan) => ({ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: 'white', position: 'absolute', top: '2px', left: aan ? '24px' : '2px', transition: 'left 0.3s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }),
     berichtBox: { textAlign: 'center', padding: '10px', borderRadius: '8px', margin: '0 12px 12px', fontWeight: 'bold', backgroundColor: berichtType === 'success' ? '#e8f5e9' : '#ffebee', color: berichtType === 'success' ? '#34C759' : '#FF4B4B' },
-    bottomNav: { position: 'fixed', bottom: 0, left: 0, right: 0, backgroundColor: 'white', display: 'flex', justifyContent: 'space-around', padding: '12px', borderTop: '1px solid #eee' },
-    navItem: (actief) => ({ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '11px', color: actief ? '#5B6EF5' : '#999', cursor: 'pointer', textDecoration: 'none' }),
   };
 
   return (
@@ -151,10 +150,10 @@ function Instellingen() {
         <div style={styles.gevarenKaart}>
           <div style={styles.sectietitel}>⚠️ Gevarenzone</div>
           <p style={{ fontSize: '13px', color: '#666', marginBottom: '16px', lineHeight: '1.6' }}>
-            Let op: het verwijderen van je account kan niet ongedaan worden gemaakt. Al je meldingen en hulpacties worden permanent gewist.
+            Let op: het verwijderen van je account kan niet ongedaan worden gemaakt.
           </p>
           <button style={styles.gevarenKnop} onClick={() => {
-            if (window.confirm('Ben je 100% zeker dat je je account wil verwijderen? Dit kan niet ongedaan worden gemaakt.')) {
+            if (window.confirm('Ben je 100% zeker dat je je account wil verwijderen?')) {
               localStorage.clear();
               window.location.href = '/';
             }
@@ -164,12 +163,7 @@ function Instellingen() {
         </div>
       )}
 
-      <div style={styles.bottomNav}>
-        <a href="/home" style={{ textDecoration: 'none' }}><div style={styles.navItem(false)}>🏠<span>Home</span></div></a>
-        <a href="/meldingen" style={{ textDecoration: 'none' }}><div style={styles.navItem(false)}>🗺️<span>Meldingen</span></div></a>
-        <a href="/melding-maken" style={{ textDecoration: 'none' }}><div style={styles.navItem(false)}>➕<span>Melden</span></div></a>
-        <a href="/profiel" style={{ textDecoration: 'none' }}><div style={styles.navItem(false)}>👤<span>Profiel</span></div></a>
-      </div>
+      <BottomNav actief="profiel" />
     </div>
   );
 }

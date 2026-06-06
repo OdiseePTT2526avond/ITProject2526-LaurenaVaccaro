@@ -1,13 +1,110 @@
-body {
+* {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Fade in animatie */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Slide in van links */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Pop in */
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Pulse voor urgente meldingen */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+/* Shimmer voor laden */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease forwards;
+}
+
+.pop-in {
+  animation: popIn 0.3s ease forwards;
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Stagger animaties voor lijsten */
+.stagger-1 { animation-delay: 0.05s; opacity: 0; animation: fadeIn 0.4s ease 0.05s forwards; }
+.stagger-2 { animation-delay: 0.1s; opacity: 0; animation: fadeIn 0.4s ease 0.1s forwards; }
+.stagger-3 { animation-delay: 0.15s; opacity: 0; animation: fadeIn 0.4s ease 0.15s forwards; }
+.stagger-4 { animation-delay: 0.2s; opacity: 0; animation: fadeIn 0.4s ease 0.2s forwards; }
+.stagger-5 { animation-delay: 0.25s; opacity: 0; animation: fadeIn 0.4s ease 0.25s forwards; }
+
+/* Knop hover effecten */
+button:active {
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
+}
+
+/* Kaart hover */
+.kaart-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kaart-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important;
+}
+
+/* Like animatie */
+@keyframes likeHart {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
+.like-animatie {
+  animation: likeHart 0.3s ease;
+}
+
+/* Pagina transitie */
+.pagina-animatie {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+/* Laden skeleton */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
 }

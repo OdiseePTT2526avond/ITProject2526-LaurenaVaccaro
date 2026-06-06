@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import BottomNav from '../components/BottomNav';
 
 function MeldingDetail() {
   const [melding, setMelding] = useState(null);
@@ -18,6 +19,8 @@ function MeldingDetail() {
   const [medischeNotitie, setMedischeNotitie] = useState('');
   const [medischeUrgentie, setMedischeUrgentie] = useState('');
   const [medischBericht, setMedischBericht] = useState('');
+  const [likes, setLikes] = useState(0);
+  const [geliked, setGeliked] = useState(false);
 
   const id = window.location.pathname.split('/').pop();
   const rol = localStorage.getItem('rol');
@@ -29,6 +32,7 @@ function MeldingDetail() {
         setMelding(data);
         setMedischeNotitie(data.medische_notitie || '');
         setMedischeUrgentie(data.medische_urgentie || '');
+        setLikes(data.likes || 0);
       });
   }, [id]);
 
@@ -51,8 +55,6 @@ function MeldingDetail() {
       setMelding({ ...melding, status: nieuweStatus });
       setBericht('✅ Status aangepast!');
       setTimeout(() => setBericht(''), 3000);
-    } else {
-      setBericht(data.fout);
     }
   };
 
@@ -69,6 +71,23 @@ function MeldingDetail() {
       setToonMedischFormulier(false);
       setTimeout(() => setMedischBericht(''), 3000);
     }
+  };
+
+  const geefLike = async () => {
+    if (geliked) return;
+    await fetch(`http://localhost:5000/api/meldingen/${id}/like`, { method: 'POST' });
+    setLikes(likes + 1);
+    setGeliked(true);
+    const knop = document.getElementById('likeKnop');
+    if (knop) {
+      knop.classList.add('like-animatie');
+      setTimeout(() => knop.classList.remove('like-animatie'), 300);
+    }
+  };
+
+  const deelViaWhatsApp = () => {
+    const tekst = `🐾 StreetPaws melding: ${melding.animal_type} gevonden! Bekijk de melding en bied hulp aan. Status: ${melding.status}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(tekst)}`, '_blank');
   };
 
   const verstuurHulp = async () => {
@@ -102,7 +121,7 @@ function MeldingDetail() {
   const styles = {
     pagina: { backgroundColor: '#f0f2f5', minHeight: '100vh', paddingBottom: '80px' },
     header: { display: 'flex', alignItems: 'center', gap: '10px', padding: '20px', backgroundColor: 'white', borderBottom: '1px solid #eee' },
-    titel: { fontWeight: 'bold', fontSize: '20px' },
+    titel: { fontWeight: 'bold', fontSize: '20px', flex: 1 },
     fotoWrapper: { width: '100%', height: '420px', overflow: 'hidden', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center' },
     foto: { width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'center' },
     fotoPlaceholder: { width: '100%', height: '250px', backgroundColor: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '50px' },
@@ -111,6 +130,9 @@ function MeldingDetail() {
     label: { fontWeight: 'bold', fontSize: '14px', color: '#333' },
     waarde: { fontSize: '14px', color: '#555', marginTop: '4px' },
     badge: (kleur) => ({ display: 'inline-block', backgroundColor: kleur, color: 'white', padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold' }),
+    actiesRij: { display: 'flex', gap: '8px', margin: '12px' },
+    likeKnop: (geliked) => ({ flex: 1, padding: '12px', backgroundColor: geliked ? '#ffebee' : 'white', border: `1px solid ${geliked ? '#FF4B4B' : '#ddd'}`, borderRadius: '10px', cursor: geliked ? 'default' : 'pointer', fontSize: '14px', fontWeight: 'bold', color: geliked ? '#FF4B4B' : '#666', textAlign: 'center' }),
+    deelKnop: { flex: 1, padding: '12px', backgroundColor: '#e8f5e9', border: '1px solid #34C759', borderRadius: '10px', cursor: 'pointer', fontSize: '14px', fontWeight: 'bold', color: '#34C759', textAlign: 'center' },
     knop: { width: 'calc(100% - 24px)', margin: '12px', padding: '14px', backgroundColor: '#5B6EF5', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' },
     dierenArtsKnop: { width: 'calc(100% - 24px)', margin: '0 12px 8px', padding: '14px', backgroundColor: '#FF9500', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer' },
     statusKnopRij: { display: 'flex', gap: '8px', marginTop: '10px' },
@@ -130,14 +152,18 @@ function MeldingDetail() {
     divider: { borderTop: '1px solid #f0f0f0', margin: '16px 0' },
     sectieLabel: { fontWeight: 'bold', fontSize: '15px', color: '#1a1a1a', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' },
     urgentieKnop: (actief, kleur) => ({ flex: 1, padding: '10px', borderRadius: '8px', border: `2px solid ${actief ? kleur : '#ddd'}`, backgroundColor: actief ? kleur + '20' : 'white', color: actief ? kleur : '#666', fontSize: '12px', cursor: 'pointer', fontWeight: actief ? 'bold' : 'normal', textAlign: 'center' }),
-    bottomNav: { position: 'fixed', bottom: 0, left: 0, right: 0, backgroundColor: 'white', display: 'flex', justifyContent: 'space-around', padding: '12px', borderTop: '1px solid #eee' },
-    navItem: (actief) => ({ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '11px', color: actief ? '#5B6EF5' : '#999', cursor: 'pointer', textDecoration: 'none' }),
   };
 
-  if (!melding) return <div style={{ padding: '20px' }}>Laden...</div>;
+  if (!melding) return (
+    <div style={{ padding: '20px' }}>
+      <div className="skeleton" style={{ height: '250px', marginBottom: '12px' }} />
+      <div className="skeleton" style={{ height: '120px', marginBottom: '12px' }} />
+      <div className="skeleton" style={{ height: '80px' }} />
+    </div>
+  );
 
   return (
-    <div style={styles.pagina}>
+    <div className="pagina-animatie" style={styles.pagina}>
       <div style={styles.header}>
         <a href="/meldingen" style={{ textDecoration: 'none', fontSize: '20px', color: '#333' }}>←</a>
         <div style={styles.titel}>Dier Details</div>
@@ -148,7 +174,16 @@ function MeldingDetail() {
         : <div style={styles.fotoPlaceholder}>📷</div>
       }
 
-      <div style={styles.kaart}>
+      <div style={styles.actiesRij}>
+        <button id="likeKnop" style={styles.likeKnop(geliked)} onClick={geefLike}>
+          {geliked ? '❤️' : '🤍'} {likes} {likes === 1 ? 'hart' : 'harten'}
+        </button>
+        <button style={styles.deelKnop} onClick={deelViaWhatsApp}>
+          📱 Delen via WhatsApp
+        </button>
+      </div>
+
+      <div className="stagger-1" style={styles.kaart}>
         <div style={styles.label}>Type: <span style={{ fontWeight: 'normal' }}>{melding.animal_type} {melding.animal_type === 'kat' ? '🐱' : melding.animal_type === 'hond' ? '🐶' : '🐾'}</span></div>
         <div style={{ ...styles.label, marginTop: '8px' }}>📍 Locatie: <span style={{ fontWeight: 'normal' }}>{melding.latitude}, {melding.longitude}</span></div>
         <div style={{ marginTop: '8px' }}>Status: <span style={styles.badge(statusKleur(melding.status))}>{melding.status}</span></div>
@@ -169,12 +204,10 @@ function MeldingDetail() {
       </div>
 
       {(melding.medische_notitie || rol === 'dierenarts' || rol === 'admin') && (
-        <div style={styles.medischKaart}>
+        <div className="stagger-2" style={styles.medischKaart}>
           <div style={{ fontWeight: 'bold', fontSize: '15px', marginBottom: '8px', color: '#f57c00' }}>🏥 Medische informatie</div>
           {melding.medische_urgentie && (
-            <div style={{ marginBottom: '8px' }}>
-              Medische urgentie: <span style={styles.badge(melding.medische_urgentie === 'kritiek' ? '#FF4B4B' : melding.medische_urgentie === 'dringend' ? '#FF9500' : '#34C759')}>{melding.medische_urgentie}</span>
-            </div>
+            <div style={{ marginBottom: '8px' }}>Medische urgentie: <span style={styles.badge(melding.medische_urgentie === 'kritiek' ? '#FF4B4B' : melding.medische_urgentie === 'dringend' ? '#FF9500' : '#34C759')}>{melding.medische_urgentie}</span></div>
           )}
           {melding.medische_notitie
             ? <div style={{ fontSize: '14px', color: '#555', lineHeight: '1.6' }}>{melding.medische_notitie}</div>
@@ -184,12 +217,12 @@ function MeldingDetail() {
         </div>
       )}
 
-      <div style={styles.kaart}>
+      <div className="stagger-3" style={styles.kaart}>
         <div style={styles.label}>Beschrijving:</div>
         <div style={styles.waarde}>{melding.description}</div>
       </div>
 
-      <div style={styles.kaart}>
+      <div className="stagger-4" style={styles.kaart}>
         <div style={styles.label}>Tijdlijn:</div>
         <div style={{ ...styles.waarde, marginTop: '8px' }}>🕐 Gemeld op {new Date(melding.created_at).toLocaleString('nl-BE')}</div>
       </div>
@@ -197,16 +230,14 @@ function MeldingDetail() {
       {hulpBericht && <p style={{ color: '#34C759', textAlign: 'center', margin: '12px', fontWeight: 'bold' }}>{hulpBericht}</p>}
 
       {(rol === 'dierenarts' || rol === 'admin') && (
-        <button style={styles.dierenArtsKnop} onClick={() => setToonMedischFormulier(true)}>
-          🏥 Medische notitie toevoegen/aanpassen
-        </button>
+        <button style={styles.dierenArtsKnop} onClick={() => setToonMedischFormulier(true)}>🏥 Medische notitie toevoegen/aanpassen</button>
       )}
 
       <button style={styles.knop} onClick={() => setToonHulpFormulier(true)}>🤝 HULP AANBIEDEN</button>
 
       {toonMedischFormulier && (
         <div style={styles.overlay} onClick={() => setToonMedischFormulier(false)}>
-          <div style={styles.modal} onClick={e => e.stopPropagation()}>
+          <div className="slide-in" style={styles.modal} onClick={e => e.stopPropagation()}>
             <button style={styles.sluiten} onClick={() => setToonMedischFormulier(false)}>✕</button>
             <div style={styles.modalTitel}>🏥 Medische notitie</div>
             <div style={styles.modalSub}>Voeg medische informatie toe als dierenarts.</div>
@@ -225,10 +256,10 @@ function MeldingDetail() {
 
       {toonHulpFormulier && (
         <div style={styles.overlay} onClick={() => setToonHulpFormulier(false)}>
-          <div style={styles.modal} onClick={e => e.stopPropagation()}>
+          <div className="slide-in" style={styles.modal} onClick={e => e.stopPropagation()}>
             <button style={styles.sluiten} onClick={() => setToonHulpFormulier(false)}>✕</button>
             <div style={styles.modalTitel}>🐾 Hulp aanbieden</div>
-            <div style={styles.modalSub}>Bedankt dat je dit dier wil helpen! Vul je gegevens in zodat we contact kunnen opnemen.</div>
+            <div style={styles.modalSub}>Bedankt dat je dit dier wil helpen!</div>
             <div style={styles.divider} />
             <div style={styles.sectieLabel}>🤝 Hoe wil je helpen?</div>
             <span style={styles.veldLabel(fout('hulpType'))}>* Type hulp {fout('hulpType') && '— verplicht!'}</span>
@@ -250,13 +281,13 @@ function MeldingDetail() {
                 <button key={v} style={styles.verblijfKnop(verblijfNu === v)} onClick={() => { setVerblijfNu(v); setFoutVelden(f => f.filter(x => x !== 'verblijfNu')); }}>{v}</button>
               ))}
             </div>
-            <span style={styles.veldLabel(fout('verblijfNa'))}>* Waar gaat het dier naartoe na jouw hulp? {fout('verblijfNa') && '— verplicht!'}</span>
+            <span style={styles.veldLabel(fout('verblijfNa'))}>* Waar gaat het dier naartoe? {fout('verblijfNa') && '— verplicht!'}</span>
             <div style={styles.verblijfRij(fout('verblijfNa'))}>
               {['🏠 Mijn thuis', '🏥 Dierenasiel', '🏥 Dierenarts', '👨‍👩‍👧 Pleeggezin', '🔄 Tijdelijk'].map(v => (
                 <button key={v} style={styles.verblijfKnop(verblijfNa === v)} onClick={() => { setVerblijfNa(v); setFoutVelden(f => f.filter(x => x !== 'verblijfNa')); }}>{v}</button>
               ))}
             </div>
-            <span style={styles.veldLabel(false)}>Adres van de nieuwe verblijfplaats (optioneel)</span>
+            <span style={styles.veldLabel(false)}>Adres nieuwe verblijfplaats (optioneel)</span>
             <input style={styles.input(false)} placeholder="bv. Kerkstraat 12, 1000 Brussel" value={verblijfAdresNa} onChange={e => setVerblijfAdresNa(e.target.value)} />
             <div style={styles.divider} />
             <div style={styles.sectieLabel}>👤 Jouw gegevens</div>
@@ -267,19 +298,14 @@ function MeldingDetail() {
             <span style={styles.veldLabel(false)}>Jouw adres (optioneel)</span>
             <input style={styles.input(false)} placeholder="Straat, nummer, gemeente" value={hulpAdres} onChange={e => setHulpAdres(e.target.value)} />
             <span style={styles.veldLabel(false)}>Extra info (optioneel)</span>
-            <textarea style={styles.textarea} placeholder="Beschrijf hoe je exact kan helpen, eventuele ervaring met dieren..." value={hulpNote} onChange={e => setHulpNote(e.target.value)} />
+            <textarea style={styles.textarea} placeholder="Beschrijf hoe je exact kan helpen..." value={hulpNote} onChange={e => setHulpNote(e.target.value)} />
             {hulpBericht && <p style={{ color: '#FF4B4B', marginBottom: '10px' }}>{hulpBericht}</p>}
             <button style={styles.hulpKnop} onClick={verstuurHulp}>✅ Bevestig hulp</button>
           </div>
         </div>
       )}
 
-      <div style={styles.bottomNav}>
-        <a href="/home" style={{ textDecoration: 'none' }}><div style={styles.navItem(false)}>🏠<span>Home</span></div></a>
-        <a href="/meldingen" style={{ textDecoration: 'none' }}><div style={styles.navItem(false)}>🗺️<span>Meldingen</span></div></a>
-        <a href="/melding-maken" style={{ textDecoration: 'none' }}><div style={styles.navItem(false)}>➕<span>Melden</span></div></a>
-        <a href="/profiel" style={{ textDecoration: 'none' }}><div style={styles.navItem(false)}>👤<span>Profiel</span></div></a>
-      </div>
+      <BottomNav actief="meldingen" />
     </div>
   );
 }

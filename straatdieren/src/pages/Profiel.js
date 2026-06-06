@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import BottomNav from '../components/BottomNav';
 
 function Profiel() {
   const naam = localStorage.getItem('naam') || 'Gebruiker';
@@ -71,8 +72,6 @@ function Profiel() {
     pijl: { color: '#ccc', fontSize: '16px' },
     uitlogRij: { display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 16px', cursor: 'pointer', color: '#FF4B4B', fontSize: '14px', fontWeight: 'bold' },
     meldingKaart: { margin: '0 16px 8px', padding: '12px', backgroundColor: '#f8f9fa', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' },
-    bottomNav: { position: 'fixed', bottom: 0, left: 0, right: 0, backgroundColor: 'white', display: 'flex', justifyContent: 'space-around', padding: '12px', borderTop: '1px solid #eee' },
-    navItem: (actief) => ({ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '11px', color: actief ? '#5B6EF5' : '#999', cursor: 'pointer', textDecoration: 'none' }),
   };
 
   return (
@@ -179,13 +178,7 @@ function Profiel() {
       </div>
 
       <div style={{ height: '20px' }} />
-
-      <div style={styles.bottomNav}>
-        <a href="/home" style={{ textDecoration: 'none' }}><div style={styles.navItem(false)}>🏠<span>Home</span></div></a>
-        <a href="/meldingen" style={{ textDecoration: 'none' }}><div style={styles.navItem(false)}>🗺️<span>Meldingen</span></div></a>
-        <a href="/melding-maken" style={{ textDecoration: 'none' }}><div style={styles.navItem(false)}>➕<span>Melden</span></div></a>
-        <a href="/profiel" style={{ textDecoration: 'none' }}><div style={styles.navItem(true)}>👤<span>Profiel</span></div></a>
-      </div>
+      <BottomNav actief="profiel" />
     </div>
   );
 }

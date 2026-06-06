@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import BottomNav from '../components/BottomNav';
 
 function MeldingMaken() {
   const [fotoPreview, setFotoPreview] = useState(null);
@@ -47,14 +48,7 @@ function MeldingMaken() {
     const response = await fetch('http://localhost:5000/api/meldingen', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({
-        animal_type: animalType,
-        description: volledige_beschrijving,
-        latitude,
-        longitude,
-        image_url: fotoBase64,
-        urgentie
-      })
+      body: JSON.stringify({ animal_type: animalType, description: volledige_beschrijving, latitude, longitude, image_url: fotoBase64, urgentie })
     });
     const data = await response.json();
     if (data.bericht) {
@@ -81,8 +75,6 @@ function MeldingMaken() {
     textarea: { width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box', height: '100px', resize: 'none' },
     verplicht: { color: '#FF4B4B', fontSize: '11px', marginLeft: '4px' },
     verstuurKnop: { width: 'calc(100% - 24px)', margin: '12px', padding: '16px', backgroundColor: '#5B6EF5', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '15px', cursor: 'pointer' },
-    bottomNav: { position: 'fixed', bottom: 0, left: 0, right: 0, backgroundColor: 'white', display: 'flex', justifyContent: 'space-around', padding: '12px', borderTop: '1px solid #eee' },
-    navItem: (actief) => ({ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '11px', color: actief ? '#5B6EF5' : '#999', cursor: 'pointer', textDecoration: 'none' }),
   };
 
   return (
@@ -92,7 +84,6 @@ function MeldingMaken() {
         <div style={styles.headerTitel}>🐾 Dier melden</div>
       </div>
 
-      {/* FOTO */}
       <div style={styles.kaart}>
         <div style={styles.sectietitel}>📸 Foto</div>
         {fotoPreview
@@ -117,7 +108,6 @@ function MeldingMaken() {
         <input id="fotoGalerij" type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFoto} />
       </div>
 
-      {/* DIERSOORT */}
       <div style={styles.kaart}>
         <div style={styles.sectietitel}>🐾 Diersoort <span style={styles.verplicht}>*</span></div>
         <div style={styles.keuzeRij}>
@@ -130,14 +120,12 @@ function MeldingMaken() {
         )}
       </div>
 
-      {/* LOCATIE */}
       <div style={styles.kaart}>
         <div style={styles.sectietitel}>📍 Locatie</div>
         <input style={styles.input} placeholder="Adres of beschrijving van de locatie" value={locatie} onChange={e => setLocatie(e.target.value)} />
         <button style={styles.gpsKnop} onClick={haalLocatie}>📍 Automatisch bepalen via GPS</button>
       </div>
 
-      {/* TOESTAND */}
       <div style={styles.kaart}>
         <div style={styles.sectietitel}>🏥 Toestand van het dier</div>
         <div style={{ marginBottom: '12px' }}>
@@ -166,7 +154,6 @@ function MeldingMaken() {
         </div>
       </div>
 
-      {/* URGENTIE */}
       <div style={styles.kaart}>
         <div style={styles.sectietitel}>🚨 Urgentie <span style={styles.verplicht}>*</span></div>
         <div style={{ display: 'flex', gap: '8px' }}>
@@ -176,13 +163,11 @@ function MeldingMaken() {
         </div>
       </div>
 
-      {/* BESCHRIJVING */}
       <div style={styles.kaart}>
         <div style={styles.sectietitel}>📝 Beschrijving <span style={styles.verplicht}>*</span></div>
         <textarea style={styles.textarea} placeholder="Beschrijf het dier en de situatie zo gedetailleerd mogelijk..." value={beschrijving} onChange={e => setBeschrijving(e.target.value)} />
       </div>
 
-      {/* CONTACTGEGEVENS */}
       <div style={styles.kaart}>
         <div style={styles.sectietitel}>👤 Jouw contactgegevens (optioneel)</div>
         <input style={{ ...styles.input, marginBottom: '10px' }} placeholder="Naam" value={melderNaam} onChange={e => setMelderNaam(e.target.value)} />
@@ -193,12 +178,7 @@ function MeldingMaken() {
       {bericht && <p style={{ textAlign: 'center', color: bericht.includes('✅') ? '#34C759' : '#FF4B4B', margin: '0 12px', fontWeight: 'bold' }}>{bericht}</p>}
       <button style={styles.verstuurKnop} onClick={verstuur}>📤 MELDING VERSTUREN</button>
 
-      <div style={styles.bottomNav}>
-        <a href="/home" style={{ textDecoration: 'none' }}><div style={styles.navItem(false)}>🏠<span>Home</span></div></a>
-        <a href="/meldingen" style={{ textDecoration: 'none' }}><div style={styles.navItem(false)}>🗺️<span>Meldingen</span></div></a>
-        <a href="/melding-maken" style={{ textDecoration: 'none' }}><div style={styles.navItem(true)}>➕<span>Melden</span></div></a>
-        <a href="/profiel" style={{ textDecoration: 'none' }}><div style={styles.navItem(false)}>👤<span>Profiel</span></div></a>
-      </div>
+      <BottomNav actief="melden" />
     </div>
   );
 }

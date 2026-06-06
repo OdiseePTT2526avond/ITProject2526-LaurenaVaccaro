@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import BottomNav from '../components/BottomNav';
 
 function MijnHulpacties() {
   const [hulpacties, setHulpacties] = useState([]);
@@ -17,11 +18,8 @@ function MijnHulpacties() {
     pagina: { backgroundColor: '#f0f2f5', minHeight: '100vh', paddingBottom: '80px' },
     header: { backgroundColor: 'white', padding: '20px', display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid #eee' },
     headerTitel: { fontWeight: 'bold', fontSize: '18px' },
-    kaart: { backgroundColor: 'white', borderRadius: '12px', margin: '12px', padding: '16px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' },
     leeg: { textAlign: 'center', color: '#999', padding: '40px 20px' },
     hulpKaart: { backgroundColor: 'white', borderRadius: '12px', margin: '12px', padding: '16px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', borderLeft: '4px solid #34C759' },
-    bottomNav: { position: 'fixed', bottom: 0, left: 0, right: 0, backgroundColor: 'white', display: 'flex', justifyContent: 'space-around', padding: '12px', borderTop: '1px solid #eee' },
-    navItem: (actief) => ({ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '11px', color: actief ? '#5B6EF5' : '#999', cursor: 'pointer', textDecoration: 'none' }),
   };
 
   return (
@@ -50,12 +48,7 @@ function MijnHulpacties() {
         ))
       )}
 
-      <div style={styles.bottomNav}>
-        <a href="/home" style={{ textDecoration: 'none' }}><div style={styles.navItem(false)}>🏠<span>Home</span></div></a>
-        <a href="/meldingen" style={{ textDecoration: 'none' }}><div style={styles.navItem(false)}>🗺️<span>Meldingen</span></div></a>
-        <a href="/melding-maken" style={{ textDecoration: 'none' }}><div style={styles.navItem(false)}>➕<span>Melden</span></div></a>
-        <a href="/profiel" style={{ textDecoration: 'none' }}><div style={styles.navItem(false)}>👤<span>Profiel</span></div></a>
-      </div>
+      <BottomNav actief="profiel" />
     </div>
   );
 }
