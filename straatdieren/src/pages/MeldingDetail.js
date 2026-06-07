@@ -85,10 +85,10 @@ function MeldingDetail() {
     }
   };
 
-  const deelViaWhatsApp = () => {
-    const tekst = `🐾 StreetPaws melding: ${melding.animal_type} gevonden! Bekijk de melding en bied hulp aan. Status: ${melding.status}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(tekst)}`, '_blank');
-  };
+const deelViaWhatsApp = () => {
+  const tekst = `🐾 StreetPaws — ${melding.animal_type} gevonden en heeft hulp nodig!\n\n📍 Status: ${melding.status}\n🚨 Urgentie: ${melding.urgentie || 'onbekend'}\n\n📋 ${melding.description?.substring(0, 100)}...\n\n🐾 Gemeld via StreetPaws`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(tekst)}`, '_blank');
+};
 
   const verstuurHulp = async () => {
     const fouten = [];
