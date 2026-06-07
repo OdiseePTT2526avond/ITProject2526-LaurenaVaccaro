@@ -3,6 +3,7 @@ import BottomNav from '../components/BottomNav';
 
 function Home() {
   const [stats, setStats] = useState({ totaal: 0, geholpen: 0, nieuw: 0 });
+  const [sponsorPopup, setSponsorPopup] = useState(null);
   const naam = localStorage.getItem('naam') || 'Bezoeker';
 
   useEffect(() => {
@@ -16,6 +17,12 @@ function Home() {
         });
       });
   }, []);
+
+  const sponsorInfo = {
+    '🍖 Voeding': { titel: '🍖 Voeding sponsoren', tekst: 'Met jouw bijdrage zorgen we voor dagelijkse voeding voor straatdieren die wachten op opvang. Elke euro telt!', kleur: '#FF9500' },
+    '🏥 Dierenarts': { titel: '🏥 Dierenarts sponsoren', tekst: 'Medische zorg is cruciaal voor gewonde straatdieren. Jouw steun betaalt voor behandelingen, operaties en medicatie.', kleur: '#FF4B4B' },
+    '🏠 Opvang': { titel: '🏠 Opvang sponsoren', tekst: 'Tijdelijke opvang bieden aan straatdieren totdat ze een forever home vinden. Help ons meer plaatsen te creëren!', kleur: '#34C759' },
+  };
 
   const styles = {
     pagina: { backgroundColor: '#f0f2f5', minHeight: '100vh', paddingBottom: '80px' },
@@ -43,6 +50,11 @@ function Home() {
     stap: { flex: 1, textAlign: 'center' },
     stapNummer: { width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#5B6EF5', color: 'white', fontWeight: 'bold', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px' },
     stapTekst: { fontSize: '12px', color: '#555' },
+    overlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' },
+    popup: { backgroundColor: 'white', borderRadius: '16px', padding: '24px', width: '100%', maxWidth: '360px' },
+    popupTitel: { fontWeight: 'bold', fontSize: '18px', marginBottom: '12px' },
+    popupTekst: { fontSize: '14px', color: '#555', lineHeight: '1.6', marginBottom: '20px' },
+    popupKnop: { width: '100%', padding: '12px', backgroundColor: '#5B6EF5', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' },
   };
 
   return (
@@ -96,7 +108,7 @@ function Home() {
           <button style={styles.actieKnop('#34C759')} onClick={() => window.location.href = '/succesverhalen'}>
             <span style={styles.actieEmoji}>🌟</span>Succesverhalen
           </button>
-          <button style={styles.actieKnop('#8b5cf6')} onClick={() => window.location.href = '/profiel'}>
+          <button style={styles.actieKnop('#8b5cf6')} onClick={() => window.location.href = '/register'}>
             <span style={styles.actieEmoji}>🤝</span>Vrijwilliger
           </button>
         </div>
@@ -142,16 +154,33 @@ function Home() {
 
         <div style={styles.sectietitel}>💰 Steun ons</div>
         <div className="kaart-hover" style={{ ...styles.infoKaart, background: 'linear-gradient(135deg, #1e293b, #0f172a)', color: 'white' }}>
-          <div style={{ ...styles.infoTekst, color: '#94a3b8' }}>
-            Straatdieren hebben voeding, dierenaartszorg en opvang nodig. Met jouw steun kunnen we meer dieren helpen.
+          <div style={{ ...styles.infoTekst, color: '#94a3b8', marginBottom: '12px' }}>
+            Straatdieren hebben voeding, dierenaartszorg en opvang nodig. Klik op een optie om meer te weten!
           </div>
-          <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-            {['🍖 Voeding', '🏥 Dierenarts', '🏠 Opvang'].map(s => (
-              <div key={s} style={{ flex: 1, backgroundColor: 'rgba(91,110,245,0.2)', border: '1px solid #5B6EF5', borderRadius: '8px', padding: '8px', textAlign: 'center', fontSize: '12px', color: '#a5b4fc' }}>{s}</div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            {Object.keys(sponsorInfo).map(s => (
+              <div key={s} onClick={() => setSponsorPopup(s)} style={{ flex: 1, backgroundColor: 'rgba(91,110,245,0.2)', border: '1px solid #5B6EF5', borderRadius: '8px', padding: '10px 6px', textAlign: 'center', fontSize: '12px', color: '#a5b4fc', cursor: 'pointer', transition: 'all 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(91,110,245,0.4)'}
+                onMouseLeave={e => e.currentTarget.style.backgroundColor = 'rgba(91,110,245,0.2)'}>
+                {s}<br/><span style={{ fontSize: '10px', opacity: 0.7 }}>Klik voor info</span>
+              </div>
             ))}
           </div>
         </div>
       </div>
+
+      {sponsorPopup && (
+        <div style={styles.overlay} onClick={() => setSponsorPopup(null)}>
+          <div className="pop-in" style={styles.popup} onClick={e => e.stopPropagation()}>
+            <div style={{ fontSize: '40px', textAlign: 'center', marginBottom: '12px' }}>{sponsorPopup.split(' ')[0]}</div>
+            <div style={styles.popupTitel}>{sponsorInfo[sponsorPopup].titel}</div>
+            <div style={styles.popupTekst}>{sponsorInfo[sponsorPopup].tekst}</div>
+            <button style={{ ...styles.popupKnop, backgroundColor: sponsorInfo[sponsorPopup].kleur }} onClick={() => setSponsorPopup(null)}>
+              Sluiten
+            </button>
+          </div>
+        </div>
+      )}
 
       <BottomNav actief="home" />
     </div>

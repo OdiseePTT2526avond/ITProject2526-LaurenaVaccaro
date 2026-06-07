@@ -122,7 +122,7 @@ function MeldingDetail() {
     pagina: { backgroundColor: '#f0f2f5', minHeight: '100vh', paddingBottom: '80px' },
     header: { display: 'flex', alignItems: 'center', gap: '10px', padding: '20px', backgroundColor: 'white', borderBottom: '1px solid #eee' },
     titel: { fontWeight: 'bold', fontSize: '20px', flex: 1 },
-    fotoWrapper: { width: '100%', height: '420px', overflow: 'hidden', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+    fotoWrapper: { width: '100%', height: '300px', overflow: 'hidden', backgroundColor: '#1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'center' },
     foto: { width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'center' },
     fotoPlaceholder: { width: '100%', height: '250px', backgroundColor: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '50px' },
     kaart: { backgroundColor: 'white', borderRadius: '12px', padding: '16px', margin: '12px', marginBottom: '0' },
@@ -156,9 +156,9 @@ function MeldingDetail() {
 
   if (!melding) return (
     <div style={{ padding: '20px' }}>
-      <div className="skeleton" style={{ height: '250px', marginBottom: '12px' }} />
-      <div className="skeleton" style={{ height: '120px', marginBottom: '12px' }} />
-      <div className="skeleton" style={{ height: '80px' }} />
+      <div className="skeleton" style={{ height: '300px', marginBottom: '12px', borderRadius: '8px' }} />
+      <div className="skeleton" style={{ height: '120px', marginBottom: '12px', borderRadius: '8px' }} />
+      <div className="skeleton" style={{ height: '80px', borderRadius: '8px' }} />
     </div>
   );
 
@@ -176,7 +176,7 @@ function MeldingDetail() {
 
       <div style={styles.actiesRij}>
         <button id="likeKnop" style={styles.likeKnop(geliked)} onClick={geefLike}>
-          {geliked ? '❤️' : '🤍'} {likes} {likes === 1 ? 'hart' : 'harten'}
+          {geliked ? '❤️' : '🤍'} {likes} {likes === 1 ? 'persoon denkt mee' : 'mensen denken mee'}
         </button>
         <button style={styles.deelKnop} onClick={deelViaWhatsApp}>
           📱 Delen via WhatsApp

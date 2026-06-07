@@ -5,8 +5,8 @@ function MeldingMaken() {
   const [fotoPreview, setFotoPreview] = useState(null);
   const [fotoBase64, setFotoBase64] = useState('');
   const [locatie, setLocatie] = useState('');
-  const [latitude, setLatitude] = useState('');
-  const [longitude, setLongitude] = useState('');
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
   const [dierType, setDierType] = useState('');
   const [anderDier, setAnderDier] = useState('');
   const [gewond, setGewond] = useState('');
@@ -17,17 +17,40 @@ function MeldingMaken() {
   const [melderNaam, setMelderNaam] = useState('');
   const [melderTel, setMelderTel] = useState('');
   const [bericht, setBericht] = useState('');
+  const [locatieBericht, setLocatieBericht] = useState('');
 
   const haalLocatie = () => {
     navigator.geolocation.getCurrentPosition((pos) => {
       setLatitude(pos.coords.latitude);
       setLongitude(pos.coords.longitude);
       setLocatie(`${pos.coords.latitude}, ${pos.coords.longitude}`);
+      setLocatieBericht('✅ GPS locatie bepaald!');
+    }, () => {
+      setLocatieBericht('❌ GPS niet beschikbaar');
     });
+  };
+
+  const zoekAdres = async () => {
+    if (!locatie) return;
+    setLocatieBericht('🔍 Adres zoeken...');
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locatie)}&limit=1`);
+      const data = await response.json();
+      if (data.length > 0) {
+        setLatitude(parseFloat(data[0].lat));
+        setLongitude(parseFloat(data[0].lon));
+        setLocatieBericht(`✅ Locatie gevonden!`);
+      } else {
+        setLocatieBericht('❌ Adres niet gevonden, probeer opnieuw');
+      }
+    } catch (err) {
+      setLocatieBericht('❌ Fout bij zoeken adres');
+    }
   };
 
   const handleFoto = (e) => {
     const file = e.target.files[0];
+    if (!file) return;
     const reader = new FileReader();
     reader.onloadend = () => {
       setFotoBase64(reader.result);
@@ -48,7 +71,14 @@ function MeldingMaken() {
     const response = await fetch('http://localhost:5000/api/meldingen', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ animal_type: animalType, description: volledige_beschrijving, latitude, longitude, image_url: fotoBase64, urgentie })
+      body: JSON.stringify({
+        animal_type: animalType,
+        description: volledige_beschrijving,
+        latitude: latitude || null,
+        longitude: longitude || null,
+        image_url: fotoBase64 || null,
+        urgentie
+      })
     });
     const data = await response.json();
     if (data.bericht) {
@@ -66,9 +96,12 @@ function MeldingMaken() {
     kaart: { backgroundColor: 'white', borderRadius: '12px', margin: '12px', padding: '16px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' },
     sectietitel: { fontWeight: 'bold', fontSize: '14px', color: '#1a1a1a', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' },
     fotoBox: { border: '2px dashed #ddd', borderRadius: '12px', padding: '20px', textAlign: 'center', cursor: 'pointer', backgroundColor: '#fafafa' },
-    preview: { width: '100%', borderRadius: '8px', maxHeight: '200px', objectFit: 'cover' },
+    preview: { width: '100%', borderRadius: '8px', height: '200px', objectFit: 'contain', backgroundColor: '#1a1a1a' },
     input: { width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box' },
-    gpsKnop: { backgroundColor: 'transparent', border: 'none', color: '#5B6EF5', cursor: 'pointer', fontSize: '13px', marginTop: '6px', padding: '0' },
+    locatieRij: { display: 'flex', gap: '8px', marginBottom: '8px' },
+    locatieInput: { flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box' },
+    zoekKnop: { padding: '12px 16px', backgroundColor: '#5B6EF5', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' },
+    gpsKnop: { backgroundColor: 'transparent', border: 'none', color: '#5B6EF5', cursor: 'pointer', fontSize: '13px', padding: '0' },
     keuzeRij: { display: 'flex', gap: '8px', flexWrap: 'wrap' },
     keuzeKnop: (actief, kleur) => ({ padding: '8px 14px', borderRadius: '20px', border: `1px solid ${actief ? kleur : '#ddd'}`, backgroundColor: actief ? kleur : 'white', color: actief ? 'white' : '#333', fontSize: '13px', cursor: 'pointer', fontWeight: actief ? 'bold' : 'normal' }),
     urgentieKnop: (actief, kleur) => ({ flex: 1, padding: '12px', borderRadius: '10px', border: `2px solid ${actief ? kleur : '#ddd'}`, backgroundColor: actief ? kleur + '20' : 'white', color: actief ? kleur : '#666', fontSize: '13px', cursor: 'pointer', fontWeight: actief ? 'bold' : 'normal', textAlign: 'center' }),
@@ -122,8 +155,15 @@ function MeldingMaken() {
 
       <div style={styles.kaart}>
         <div style={styles.sectietitel}>📍 Locatie</div>
-        <input style={styles.input} placeholder="Adres of beschrijving van de locatie" value={locatie} onChange={e => setLocatie(e.target.value)} />
-        <button style={styles.gpsKnop} onClick={haalLocatie}>📍 Automatisch bepalen via GPS</button>
+        <div style={styles.locatieRij}>
+          <input style={styles.locatieInput} placeholder="Typ een adres of straatnaam..." value={locatie} onChange={e => setLocatie(e.target.value)} onKeyPress={e => e.key === 'Enter' && zoekAdres()} />
+          <button style={styles.zoekKnop} onClick={zoekAdres}>🔍 Zoek</button>
+        </div>
+        <button style={styles.gpsKnop} onClick={haalLocatie}>📍 Of gebruik automatisch GPS</button>
+        {locatieBericht && <div style={{ fontSize: '12px', marginTop: '6px', color: locatieBericht.includes('✅') ? '#34C759' : locatieBericht.includes('❌') ? '#FF4B4B' : '#999' }}>{locatieBericht}</div>}
+        {latitude && longitude && (
+          <div style={{ fontSize: '12px', color: '#999', marginTop: '4px' }}>📌 {parseFloat(latitude).toFixed(4)}, {parseFloat(longitude).toFixed(4)}</div>
+        )}
       </div>
 
       <div style={styles.kaart}>
