@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/ITProject2526-LaurenaVaccaro/static/css/main.f6525d2a.css",
+    "main.js": "/ITProject2526-LaurenaVaccaro/static/js/main.c78c85c0.js",
+    "static/js/453.a0156e23.chunk.js": "/ITProject2526-LaurenaVaccaro/static/js/453.a0156e23.chunk.js",
+    "index.html": "/ITProject2526-LaurenaVaccaro/index.html",
+    "main.f6525d2a.css.map": "/ITProject2526-LaurenaVaccaro/static/css/main.f6525d2a.css.map",
+    "main.c78c85c0.js.map": "/ITProject2526-LaurenaVaccaro/static/js/main.c78c85c0.js.map",
+    "453.a0156e23.chunk.js.map": "/ITProject2526-LaurenaVaccaro/static/js/453.a0156e23.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f6525d2a.css",
+    "static/js/main.c78c85c0.js"
+  ]
+}
